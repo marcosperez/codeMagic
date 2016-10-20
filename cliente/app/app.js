@@ -1,14 +1,22 @@
 'use strict';
 
+var socket = null;
 // Declare app level module which depends on views, and components
-angular.module('myApp', [
+var app = angular.module('myApp', [
+    'ngAnimate',
+    'ui.bootstrap',
   'ngRoute',
   'myApp.editor',
-  'myApp.view2',
+  'myApp.login',
   'myApp.version'
 ]).
 config(['$locationProvider', '$routeProvider', function($locationProvider, $routeProvider) {
   $locationProvider.hashPrefix('!');
 
-  $routeProvider.otherwise({redirectTo: '/editor'});
+  $routeProvider.otherwise({redirectTo: '/login'});
 }]);
+
+
+app.run(function ($rootScope) {
+
+});

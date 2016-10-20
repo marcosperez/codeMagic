@@ -4,6 +4,8 @@
   "description": "editor de codigo coolaborativo en tiempo real",
   "main": "app.js",
   "dependencies": {
+    "angular-animate": "^1.5.8",
+    "angular-ui-bootstrap": "^2.2.0",
     "codemirror": "^5.19.0",
     "socketio": "^1.0.0"
   },
