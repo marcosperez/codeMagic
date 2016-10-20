@@ -1,0 +1,16 @@
+{
+  "name": "codemagic",
+  "version": "1.0.0",
+  "description": "editor de codigo coolaborativo en tiempo real",
+  "main": "app.js",
+  "dependencies": {
+    "codemirror": "^5.19.0",
+    "socketio": "^1.0.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "marcos daniel perez",
+  "license": "ISC"
+}
