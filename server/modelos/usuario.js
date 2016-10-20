@@ -1,7 +1,9 @@
 var mongoose = require("./conexion");
 var Promise = require('bluebird');
 
-var Usuario = mongoose.model('Usuario', { nombre: String ,password:String});
+var UsuarioSchema = mongoose.Schema({ nombre: String ,password:String});
+
+var Usuario = mongoose.model('Usuario',UsuarioSchema );
 
 
 module.exports = {
@@ -10,7 +12,9 @@ module.exports = {
     validar:function(nombre,password){
         return new Promise(function (resolve, reject) {
             Usuario.findOne({'nombre':nombre}).then(function(user){
-                if(user.password == password){
+
+                console.log(user);
+                if(user && user.password == password){
                     resolve(user);
                 }else{
                     var user = new Usuario({'nombre':nombre,'password':password});

@@ -7,7 +7,9 @@ app.service('sEditor', ['$log', function ($log) {
     require.config({
         baseUrl: '/'
     });
-
+    sEditor.cargarArchivo= function(path,nombre){
+        buffers[nombre] = new Archivo();
+    };
 
     sEditor.crearEditor = function(domElementCode) {
         require([
@@ -42,13 +44,7 @@ app.service('sEditor', ['$log', function ($log) {
 
             , });
 
-            socket.emit('recuperar', {});
-            socket.on('archivo', function (data) {
-                console.log(data.archivo);
-                //$scope.codigo = data.archivo;
-                sEditor.editor.setValue(data.archivo);
-                // document.getElementById('c4d981e9a2c98b0483252333_input')
-            })
+
 
             sEditor.editor.on("beforeChange", function (code, object) {
                 // code.makeChange(editorHTML.doc, object, true);
@@ -101,5 +97,22 @@ app.service('sEditor', ['$log', function ($log) {
         });
     }
 
+    var Archivo = function(path,nombre){
+        this.buffer = null;
+        this.path = path;
+        this.nombre = nombre;
 
+         socket.emit('recuperar', {path:path,nombre:nombre});
+
+        socket.on('archivo', function (data) {
+            console.log(data.archivo);
+            //$scope.codigo = data.archivo;
+            //sEditor.editor.setValue(data.archivo);
+            this.buffer = CodeMirror.Doc(data.archivo, 'javascript');
+            console.log("Eureca!!");
+            sEditor.editor.swapDoc(this.buffer );
+            // document.getElementById('c4d981e9a2c98b0483252333_input')
+        })
+
+    }
 }])

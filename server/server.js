@@ -2,6 +2,7 @@ var app = require('express')();
 var server = require('http').Server(app);
 var bodyParser = require('body-parser')
 var cors = require('cors')
+var mongoose = require("./modelos/conexion")
 app.use(bodyParser.json())
 app.use(cors());
 
@@ -19,13 +20,13 @@ var Usuario = require('./modelos/usuario') ;
 
 app.post('/login',function(req,res){
 
-    console.log(req.body)
+    console.log(req.body.password)
     Usuario.validar(req.body.nombre,req.body.password).then(function(user){
         res.json({user});
     }).catch(function(error){
         console.log(error);
-
-        res.json({error:error});
+            res.send(error);
+        //res.json({error:error});
     });
 
 });
