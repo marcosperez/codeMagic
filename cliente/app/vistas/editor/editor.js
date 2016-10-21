@@ -4,13 +4,15 @@ angular.module('myApp.editor', ['ngRoute']).config(['$routeProvider', function (
         templateUrl: 'vistas/editor/editor.html'
         , controller: 'EditorCtrl'
     });
-}]).controller('EditorCtrl', ['$scope', '$interval', 'sEditor', '$location', function ($scope, $interval, sEditor, $location) {
+}]).controller('EditorCtrl', ['$scope', '$interval', 'sEditor', '$location','$rootScope', function ($scope, $interval, sEditor, $location,$rootScope) {
     //console.log(socket);
+    var socket = $rootScope.socket;
+    $scope.usuarios = $rootScope.usuarios;
     if (!socket) {
         $location.url('/login');
     }
     else {
-        $scope.usuarios = [];
+
         $scope.codigo = "";
         //var socket = io('http://172.16.22.114:8001');
         $scope.guardar = function () {
@@ -24,7 +26,19 @@ angular.module('myApp.editor', ['ngRoute']).config(['$routeProvider', function (
             //$interval($scope.guardar, 60000);
         $scope.init = function () {
             sEditor.crearEditor(document.getElementById("code"));
-            sEditor.cargarArchivo();
+
         }
+
+        $scope.nuevoProyecto = function(){
+
+        }
+
+        $scope.$on('usuarios', function (event, arg) {
+
+            console.log("usuarios:");
+            console.log(arg);
+            $scope.usuarios = $rootScope.usuarios;
+            $scope.$apply();
+        });
     }
 }]);

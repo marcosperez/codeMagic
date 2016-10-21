@@ -1,17 +1,25 @@
-app.service('sEditor', ['$log', function ($log) {
-
+app.service('sEditor', ['$log', 'sSocket', '$rootScope', function ($log, sSocket, $rootScope) {
     var sEditor = this;
-    var buffers = [];
+    var archivos = [];
+
+    var socket = $rootScope.socket;
     sEditor.editor = false;
 
     require.config({
         baseUrl: '/'
     });
-    sEditor.cargarArchivo= function(path,nombre){
-        buffers[nombre] = new Archivo();
+
+    sEditor.cargarArchivo = function (idArchivo) {
+        var archivo = archivos[idArchivo];
+        if (archivo) {
+            sEditor.editor.swapDoc(this.buffer);
+        }
+        else {
+            archivos[idArchivo] = new Archivo(idArchivo);
+        }
     };
 
-    sEditor.crearEditor = function(domElementCode) {
+    sEditor.crearEditor = function (domElementCode) {
         require([
           "node_modules/codemirror/lib/codemirror"
         , "node_modules/codemirror/mode/javascript/javascript"
@@ -25,7 +33,6 @@ app.service('sEditor', ['$log', function ($log) {
         , "node_modules/codemirror/mode/xml/xml"
         , "node_modules/codemirror/mode/css/css"
         ], function (CodeMirror) {
-
             //document.getElementById("code")
             sEditor.editor = CodeMirror.fromTextArea(domElementCode, {
                 lineNumbers: true
@@ -43,23 +50,6 @@ app.service('sEditor', ['$log', function ($log) {
                     //, inputStyle: "contenteditable"
 
             , });
-
-
-
-            sEditor.editor.on("beforeChange", function (code, object) {
-                // code.makeChange(editorHTML.doc, object, true);
-                //console.log("BeforeChenge");
-                //console.log(object);
-                socket.emit('accion', {
-                    object: object
-                    , idOperacion: code.doc.cm.curOp.id
-                });
-                object.canceled = true;
-            });
-            socket.on('accion', function (data) {
-                sEditor.editor.realizarAccion(sEditor.editor.doc, data.object, data.idOperacion);
-            });
-            //editor.setOption("theme", theme);
             if (typeof Promise !== undefined) {
                 var comp = [
                             ["here", "hither"]
@@ -94,25 +84,41 @@ app.service('sEditor', ['$log', function ($log) {
                     })
                 }
             }
+
+            sSocket.obtenerSocket().then(function (socket) {
+
+                sEditor.editor.on("beforeChange", function (code, object) {
+                    socket.emit('accion', {
+                        object: object
+                        , idOperacion: code.doc.cm.curOp.id
+                    });
+                    object.canceled = true;
+                });
+
+
+                socket.on('accion', function (data) {
+                    sEditor.editor.realizarAccion(sEditor.editor.doc, data.object, data.idOperacion);
+                });
+            }).catch(function (err) {
+                console.log(err);
+            });
+            //sEditor.cargarArchivo();
         });
     }
-
-    var Archivo = function(path,nombre){
+    var Archivo = function (idArchivo) {
         this.buffer = null;
         this.path = path;
         this.nombre = nombre;
-
-         socket.emit('recuperar', {path:path,nombre:nombre});
-
+        socket.emit('recuperar archivo', {
+            path: path
+            , nombre: nombre
+        });
         socket.on('archivo', function (data) {
             console.log(data.archivo);
-            //$scope.codigo = data.archivo;
-            //sEditor.editor.setValue(data.archivo);
             this.buffer = CodeMirror.Doc(data.archivo, 'javascript');
+            archivos[idArchivo] = this;
             console.log("Eureca!!");
-            sEditor.editor.swapDoc(this.buffer );
-            // document.getElementById('c4d981e9a2c98b0483252333_input')
+            sEditor.editor.swapDoc(this.buffer);
         })
-
     }
 }])

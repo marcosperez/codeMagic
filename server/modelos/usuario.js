@@ -12,11 +12,11 @@ module.exports = {
     validar:function(nombre,password){
         return new Promise(function (resolve, reject) {
             Usuario.findOne({'nombre':nombre}).then(function(user){
-
-                console.log(user);
-                if(user && user.password == password){
+                if(user){// && user.password == password){
+                    //Usuario existente y valido
                     resolve(user);
                 }else{
+                    //Alta de usuario o usuario invalido
                     var user = new Usuario({'nombre':nombre,'password':password});
                     //Si no existe crea uno nuevo.
                     user.save().then(function(user){
