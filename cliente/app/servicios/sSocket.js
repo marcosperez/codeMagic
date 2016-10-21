@@ -11,8 +11,8 @@ app.service('sSocket', ['$log', '$rootScope', '$q', function ($log, $rootScope, 
             //Conectados
             sSocket.socket.on('connect', function (socket) {
                 deferred.resolve(sSocket.socket);
-                sSocket.cargarProyecto = function (abrirProyecto) {
-                    sSocket.socket.emit('setProyecto', {
+                sSocket.cargarProyecto = function (idProyecto) {
+                    sSocket.socket.emit('abrirProyecto', {
                         idProyecto: idProyecto
                     });
                     //informo de mi presencia

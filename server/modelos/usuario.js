@@ -1,17 +1,25 @@
 var mongoose = require("./conexion");
 var Promise = require('bluebird');
+var Schema = mongoose.Schema;
 
-var UsuarioSchema = mongoose.Schema({ nombre: String ,password:String});
+
+var UsuarioSchema = mongoose.Schema({
+    nombre: String ,
+    password:String,
+    proyectos:[{ type: Schema.Types.ObjectId, ref: 'Proyecto' }]
+});
 
 var Usuario = mongoose.model('Usuario',UsuarioSchema );
-
+var Proyecto = require('./proyecto').model;
 
 module.exports = {
     model:Usuario,
     guardar: Usuario.save,
     validar:function(nombre,password){
         return new Promise(function (resolve, reject) {
-            Usuario.findOne({'nombre':nombre}).then(function(user){
+            Usuario.findOne({'nombre':nombre})
+                .populate('proyectos')
+                .then(function(user){
                 if(user){// && user.password == password){
                     //Usuario existente y valido
                     resolve(user);

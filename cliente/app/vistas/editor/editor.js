@@ -5,9 +5,13 @@ angular.module('myApp.editor', ['ngRoute']).config(['$routeProvider', function (
         , controller: 'EditorCtrl'
     });
 }]).controller('EditorCtrl', ['$scope', '$interval', 'sEditor', '$location','$rootScope', function ($scope, $interval, sEditor, $location,$rootScope) {
+
+
+
     //console.log(socket);
     var socket = $rootScope.socket;
     $scope.usuarios = $rootScope.usuarios;
+    $scope.proyectos  =[];
     if (!socket) {
         $location.url('/login');
     }
@@ -27,10 +31,15 @@ angular.module('myApp.editor', ['ngRoute']).config(['$routeProvider', function (
         $scope.init = function () {
             sEditor.crearEditor(document.getElementById("code"));
 
+            $scope.proyectos = $rootScope.usuario.proyectos;
+            $scope.$apply();
         }
 
-        $scope.nuevoProyecto = function(){
-
+        $scope.nuevoProyecto = function(crear){
+            var nombre = window.prompt("Nombre del proyecto:","prueba");
+            sEditor.crearProyecto(nombre).then(function(proyecto){
+                $scope.proyectos.push(proyecto);
+            });
         }
 
         $scope.$on('usuarios', function (event, arg) {

@@ -5,6 +5,8 @@ var socket = false;
 var app = angular.module('myApp', [
     'ngAnimate',
     'ui.bootstrap',
+    'RecursionHelper',
+    'TreeWidget',
   'ngRoute',
   'myApp.editor',
   'myApp.login',

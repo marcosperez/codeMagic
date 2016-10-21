@@ -1,7 +1,7 @@
-app.service('sEditor', ['$log', 'sSocket', '$rootScope', function ($log, sSocket, $rootScope) {
+app.service('sEditor', ['$log', 'sSocket', '$rootScope','$q', function ($log, sSocket, $rootScope,$q) {
     var sEditor = this;
     var archivos = [];
-
+    var proyectos = {};
     var socket = $rootScope.socket;
     sEditor.editor = false;
 
@@ -9,15 +9,7 @@ app.service('sEditor', ['$log', 'sSocket', '$rootScope', function ($log, sSocket
         baseUrl: '/'
     });
 
-    sEditor.cargarArchivo = function (idArchivo) {
-        var archivo = archivos[idArchivo];
-        if (archivo) {
-            sEditor.editor.swapDoc(this.buffer);
-        }
-        else {
-            archivos[idArchivo] = new Archivo(idArchivo);
-        }
-    };
+
 
     sEditor.crearEditor = function (domElementCode) {
         require([
@@ -87,6 +79,8 @@ app.service('sEditor', ['$log', 'sSocket', '$rootScope', function ($log, sSocket
 
             sSocket.obtenerSocket().then(function (socket) {
 
+                //socket.emit('recuperar proyectos',{});
+                //sSocket.cargarProyecto('testRoom');
                 sEditor.editor.on("beforeChange", function (code, object) {
                     socket.emit('accion', {
                         object: object
@@ -105,6 +99,9 @@ app.service('sEditor', ['$log', 'sSocket', '$rootScope', function ($log, sSocket
             //sEditor.cargarArchivo();
         });
     }
+
+
+    /*-----------Archivo------------------------------------------*/
     var Archivo = function (idArchivo) {
         this.buffer = null;
         this.path = path;
@@ -113,6 +110,7 @@ app.service('sEditor', ['$log', 'sSocket', '$rootScope', function ($log, sSocket
             path: path
             , nombre: nombre
         });
+
         socket.on('archivo', function (data) {
             console.log(data.archivo);
             this.buffer = CodeMirror.Doc(data.archivo, 'javascript');
@@ -120,5 +118,49 @@ app.service('sEditor', ['$log', 'sSocket', '$rootScope', function ($log, sSocket
             console.log("Eureca!!");
             sEditor.editor.swapDoc(this.buffer);
         })
+
+
     }
+    /*-------------------------------------------------------------*/
+
+    sEditor.cargarArchivo= function(idArchivo){
+        Proyecto.cargarArchivo(idArchivo);
+    }
+
+    sEditor.crearProyecto = function(nombre){
+        var deferred = $q.defer();
+        socket.emit('alta proyecto',{nombre:nombre});
+        socket.on('proyecto',function(pro){
+              proyectos.push(new Proyecto(pro));
+             $scope.treeNodes = pro.arbol;
+            deferred.resolve(pro);
+        })
+
+        return deferred.promise;
+    }
+
+    /*------------------------Proyecto-----------------------------*/
+    var Proyecto = function(pro){
+        this.archivos_buffers = {};
+        this.archivoActivo = null;
+         this.nombre = pro.nombre;
+         this._id = pro._id;
+
+        this.cargarArchivo = function (idArchivo) {
+            var archivo = this.archivos_buffers[idArchivo];
+            if (archivo) {
+                sEditor.editor.swapDoc(archivo.buffer);
+            }
+            else {
+                archivo= new Archivo(idArchivo);
+                this.archivos_buffers[idArchivo] =archivo;
+            }
+
+             this.archivoActivo = archivo;
+        };
+    }
+
+    /*-------------------------------------------------------------*/
+
+
 }])
