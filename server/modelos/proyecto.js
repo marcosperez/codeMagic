@@ -23,7 +23,7 @@ module.exports = {
             proyecto.usuarios.push(usuario);
 
             proyecto.arbol = [{
-                nombre: nombre
+                name: nombre
                 , children: []
             }];
 

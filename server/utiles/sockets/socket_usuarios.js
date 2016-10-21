@@ -3,13 +3,18 @@ var usuarios = [];
 module.exports = function (socket) {
 
     //Usuarios-----------------------------------------------
-    socket.on('usuario conectado', function (data) {
+    socket.on('usuario',function(data){
         console.log("Se conecto " + data.nombre);
-        socket.emit('usuarios', usuarios);
-        console.log(usuarios);
-        usuarios.push(data);
-        console.log(usuarios);
         socket.usuario = data;
+    });
+
+    socket.on('usuario conectado', function (data) {
+
+        socket.emit('usuarios', usuarios);
+        //console.log(usuarios);
+        usuarios.push(data);
+        //console.log(usuarios);
+
         socket.broadcast.to(socket.idProyecto).emit('usuario conectado', data);
     });
     socket.on('disconnect', function () {

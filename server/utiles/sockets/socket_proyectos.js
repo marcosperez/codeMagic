@@ -12,6 +12,7 @@ module.exports = function (socket) {
     });
 
     socket.on('alta proyecto', function (data) {
+        console.log(socket.usuario);
         Proyecto.alta(data.nombre,socket.usuario).then(function(proyecto){
             socket.emit('proyecto',proyecto)
         })

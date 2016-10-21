@@ -15,7 +15,7 @@ angular.module('myApp.login', ['ngRoute']).config(['$routeProvider', function ($
             'nombre': $scope.nombre
             , 'password': $scope.password
         }).then(function (response) {
-            console.log(response);
+            console.log(response.data.user);
             $rootScope.usuario = response.data.user;
             sSocket.obtenerSocket().then(function (socket) {
 

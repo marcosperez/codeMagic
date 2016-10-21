@@ -8,6 +8,7 @@ app.service('sSocket', ['$log', '$rootScope', '$q', function ($log, $rootScope, 
         }
         else {
             sSocket.socket = io('http://172.16.22.114:8001');
+            sSocket.socket.emit('usuario', $rootScope.usuario);
             //Conectados
             sSocket.socket.on('connect', function (socket) {
                 deferred.resolve(sSocket.socket);
@@ -17,6 +18,7 @@ app.service('sSocket', ['$log', '$rootScope', '$q', function ($log, $rootScope, 
                     });
                     //informo de mi presencia
                     console.log($rootScope.usuario);
+                    debugger
                     sSocket.socket.emit('usuario conectado', $rootScope.usuario);
                     //Recibo el resto de los usuarios
                     sSocket.socket.on('usuarios', function (data) {

@@ -10,6 +10,7 @@ var Usuario = require('../modelos/usuario');
 app.post('/login', function (req, res) {
     console.log(req.body.password)
     Usuario.validar(req.body.nombre, req.body.password).then(function (user) {
+        console.log(user);
         res.json({
             user
         });
